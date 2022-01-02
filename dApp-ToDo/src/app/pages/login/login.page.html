@@ -1,11 +1,10 @@
 
-
+<script src="https://cdn.jsdelivr.net/npm/gun/sea.js"></script>
 <ion-content>
 
 <ion-grid class="column">
   <ion-row class="column">
     <ion-col size="2" size-mg class="column">
-     
     </ion-col>
     <ion-col size="8" size-lg  class="column">
       <ion-card class="loginModal">
@@ -18,7 +17,7 @@
               <ion-col size="2"></ion-col>
               <ion-col size="8">
                 <ion-label class="textLabel">Username</ion-label>
-                <ion-input class="textInput" placeholder="Max Mustermann" (ionInput)="runInputChange($event)"></ion-input>
+                <ion-input class="textInput" placeholder="Max Mustermann" (ionInput)="runInputChange($event)" [(ngModel)]="username"></ion-input>
               </ion-col>
               <ion-col size="2"></ion-col>
             </ion-row>
@@ -26,7 +25,7 @@
               <ion-col size="2"></ion-col>
               <ion-col size="8">
                 <ion-label class="textLabel">Password</ion-label>
-                <ion-input class="textInput" placeholder="123455" (ionInput)="runInputChange($event)"></ion-input>
+                <ion-input class="textInput" placeholder="123455" (ionInput)="runInputChange($event)" [(ngModel)]="password"></ion-input>
               </ion-col>
               <ion-col size="2"></ion-col>
             </ion-row>
@@ -34,14 +33,14 @@
             <ion-row style="padding-top:5em" >
               <ion-col size="6">
                 <div style="padding-left:3em">
-                  <ion-button class="registerButton" style="float: left;" color="white">
+                  <ion-button class="registerButton" style="float: left;" color="white" (click) = "signUpUser()">
                     Register
                   </ion-button>
                 </div>
               </ion-col>
               <ion-col size="6">
                 <div style="padding-right:3em">
-                  <ion-button class="loginButton" style="float: right;" color="white">
+                  <ion-button class="loginButton" style="float: right;" color="white" (click) = "signInUser()">
                     Login
                   </ion-button>
                 </div>

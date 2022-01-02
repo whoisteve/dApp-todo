@@ -1,24 +1,41 @@
 import { Task } from "./task";
 import {sha256} from 'crypto-hash';
 
+export class _ToDo {
+    public key: string;
+    public tasks: Task[];
+    constructor(public title: string){
+        this.key = Math.random().
+        toString(36).substring(2, 15) + 
+        Math.random().toString(36).substring(2, 15);
+    }
+}
 export class ToDo {
 
     public tasks: Task[];
     public title: string;
+    public key: string;
 
 
 
     constructor(
-        title: string, 
-        tasks?: Task[]
+        title: string, key?:string, tasks?: Task[]
     ) {
         this.title = title;
-        if (tasks === undefined) {
-            this.tasks = []
+        if (key == undefined) {
+            this.key = Math.random().
+                        toString(36).substring(2, 15) + 
+                        Math.random().toString(36).substring(2, 15);
+        } else {
+            this.key = key;
+        }
+        if (tasks == undefined) {
+            this.tasks = [];
         } else {
             this.tasks = tasks;
         }
     }
+
 
     /// add Task to ToDo
     public addTask(newTask: Task):boolean {

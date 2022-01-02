@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToDo } from 'src/app/models/toDo/toDo';
 import { User } from 'src/app/models/user/user';
 import { GunService } from 'src/app/services/gun.service';
@@ -11,21 +12,20 @@ import { GunService } from 'src/app/services/gun.service';
 export class LayoutPage implements OnInit {
 
   private toDos: ToDo[] = [];
-  private user: User;
   private username:string = "Dummy"
+  private user: User = new User(this.username);
 
-  constructor(private gun: GunService) {
+
+  constructor(private gun: GunService,  private router: Router) {
 
     this.gun.getUsername().then(name => {
       this.username = name;
     })
-
-    this.gun.subUser.subscribe(subUser=> {
-      this.user = subUser;
-      // update anyhting where user was drawn
-    })
-
-
+    if (this.gun.subUser != undefined) {
+      this.gun.subUser.subscribe(subUser=> {
+        this.user = subUser;
+      })
+    }
 
     // subscription to service BehaviorSubject to get user Content
    }
@@ -36,6 +36,19 @@ export class LayoutPage implements OnInit {
 
 
   ngOnInit() {
+  }
+
+  addToDo(){
+    console.log("addToDo")
+    this.gun.addToDo().then(x=>{
+      this.user.addToDo(x);
+    })
+  }
+  
+  logout() {
+    this.gun.logoutUser().then(x=>{
+      this.router.navigate(['/app/login']);
+    })
   }
 
 }

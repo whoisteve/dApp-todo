@@ -6,7 +6,7 @@ export class User {
     private secret: string;
 
     constructor(
-        private username: string,
+        public username: string,
         secret?: string,
         toDos?: ToDo[]
     ) {

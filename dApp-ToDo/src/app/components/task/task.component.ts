@@ -14,7 +14,7 @@ export class TaskComponent implements OnInit {
   @Input() task: Task;
   //public task: Task = new Task("", taskState.unfinished);
 
-  constructor(private gunService: GunService) {
+  constructor() {
    
    }
 
@@ -23,7 +23,7 @@ export class TaskComponent implements OnInit {
   removeTask(){
     // call Service to remove Task via ToDo Token
     console.log(this.token + " and from this remove Task: " + this.task.input);
-    this.gunService.removeToDo(this.token, this.task);
+    //GunService.removeToDo(this.token, this.task);
   }
 
 }

@@ -3,7 +3,7 @@
     <ion-header>
       <ion-toolbar style="height: 100px; padding-top: 1em" color="primary">
         <ion-title style="text-align-last: center; font-size: 24pt">ToDo-Tasks</ion-title>
-        <ion-title style="text-align-last: center; font-size: 20pt">von {{username}}</ion-title>
+        <ion-title style="text-align-last: center; font-size: 20pt">von {{user.username}}</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>
@@ -12,17 +12,43 @@
         ToDos
       </ion-label>
       <!-- <ion-row *ngFor="let toDo of toDos" style="padding-top:0.25em; width: auto;"> -->
-        <ion-menu-toggle autoHide="false"  class="toDoMenu" *ngFor="let toDo of toDos">
+        <ion-menu-toggle autoHide="false"  class="toDoMenu" *ngFor="let toDo of user.toDos">
           <ion-item class="toDoMenuItem" routerLink="/app/task/{{toDo.title}}" routerDirection="root" routerLinkActive="active-link">
             <ion-item class="toDoMenuItem">
               {{toDo.title}}
             </ion-item>
           </ion-item>
         </ion-menu-toggle>
+     
       <!-- </ion-row> -->
 
       <ion-nav main #content swipeBackEnabled="false"></ion-nav>
     </ion-content>
+    
+    <ion-footer class="ion-no-border">
+      <ion-toolbar >
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12">
+              <ion-button (click) = "addToDo()">
+                <ion-icon name="plus" >
+      
+                </ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="1"></ion-col>
+            <ion-col size="10">
+              <ion-button (click)="logout()">
+                Logout
+              </ion-button>
+            </ion-col>
+            <ion-col size="1"></ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-toolbar>
+    </ion-footer>
   </ion-menu>
   <ion-router-outlet id="main"></ion-router-outlet>
 </ion-split-pane>

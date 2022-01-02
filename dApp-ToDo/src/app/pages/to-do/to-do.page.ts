@@ -13,7 +13,7 @@ export class ToDoPage implements OnInit {
 
   private toDo: ToDo;
 
-  constructor(private gun: GunService, private router: ActivatedRoute ) { 
+  constructor(private router: ActivatedRoute, private gun: GunService ) { 
     this.router.params.subscribe(params => {
       let toDoToken = params['toDo'];
         this.gun.getToDo(toDoToken).then(toDo => {
