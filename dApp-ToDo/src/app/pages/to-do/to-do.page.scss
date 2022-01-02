@@ -1,0 +1,36 @@
+.mainGrid {
+    padding-top: 4em;
+    padding-left: 4em;
+    padding-right: 4em;
+    padding-bottom: 4em;
+}
+
+.toDoTitleLabel {
+    font-size: 14pt;
+    color: var(--toDo-color-light);
+    opacity: 50%;
+}
+
+.toDoTitle {
+    font-size: 28pt;
+    font-weight: 600;
+    color: black;
+}
+
+.toDoMenu {
+    background-color: white;;
+//  background-color: var(--toDo-color-light);
+}
+
+.toDoMenuItem {
+    margin-top:0.5em;
+    margin-left: 0.25em;
+    background-color: white;
+
+}
+
+
+
+item-native {
+    background: yellow;
+}

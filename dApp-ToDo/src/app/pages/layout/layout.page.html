@@ -1,0 +1,28 @@
+<ion-split-pane contentId="main">  
+  <ion-menu contendId="content" menuId="first" side="start">
+    <ion-header>
+      <ion-toolbar style="height: 100px; padding-top: 1em" color="primary">
+        <ion-title style="text-align-last: center; font-size: 24pt">ToDo-Tasks</ion-title>
+        <ion-title style="text-align-last: center; font-size: 20pt">von {{username}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-grid><ion-row style="height:1em"></ion-row></ion-grid>
+      <ion-label style="margin-left: 2em; font-weight: 400;">
+        ToDos
+      </ion-label>
+      <!-- <ion-row *ngFor="let toDo of toDos" style="padding-top:0.25em; width: auto;"> -->
+        <ion-menu-toggle autoHide="false"  class="toDoMenu" *ngFor="let toDo of toDos">
+          <ion-item class="toDoMenuItem" routerLink="/app/task/{{toDo.title}}" routerDirection="root" routerLinkActive="active-link">
+            <ion-item class="toDoMenuItem">
+              {{toDo.title}}
+            </ion-item>
+          </ion-item>
+        </ion-menu-toggle>
+      <!-- </ion-row> -->
+
+      <ion-nav main #content swipeBackEnabled="false"></ion-nav>
+    </ion-content>
+  </ion-menu>
+  <ion-router-outlet id="main"></ion-router-outlet>
+</ion-split-pane>

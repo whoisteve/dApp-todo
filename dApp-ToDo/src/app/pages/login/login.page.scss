@@ -1,0 +1,74 @@
+.column {
+    height: -webkit-fill-available;
+ 
+}
+
+.loginModal {
+    transform: translateX(-50%) translateY(-50%);
+    top: 50%;
+    left: 50%;
+    height: 700px;
+    // height: -webkit-fill-available;
+    width: 60%;
+    position: absolute;
+    border-radius: 34px;
+    background-color: var(--toDo-color-dark);
+}
+
+.headerText {
+    font-size: 28pt;
+    text-align-last: center; 
+    font-weight: 600;
+    color: whitesmoke;
+    padding-top:1em;
+}
+
+.textInput {
+    text-align-last: center;
+    text-align: center;
+    display: block;
+    width: auto;
+    font-size: 22pt;
+    background-color: var(--toDo-color-primary);
+    color: white;
+    border-radius: 17px;   
+}
+
+.textLabel {
+    font-size: 18pt;
+}
+
+.errorLabel {
+    font-size: 16pt;
+    color:red;
+    text-align-last: center;
+    text-align: center;
+    display: block;
+    width: auto;
+
+}
+
+.registerButton {
+    text-align-last: center;
+    text-align: center;
+    display: block;
+    width:200px;
+    height: 2em;
+    font-size: 20pt;
+    background-color: var(--toDo-color-primary);
+    color: white;
+    border-radius: 17px; 
+}
+
+.loginButton {
+    text-align-last: center;
+    text-align: center;
+    display: block;
+    width:200px;
+    height: 2em;
+    font-size: 20pt;
+    background-color: white;
+    color: black;
+    border-radius: 17px; 
+
+}

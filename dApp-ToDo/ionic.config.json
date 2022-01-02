@@ -1,0 +1,7 @@
+{
+  "name": "dApp-ToDo",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
