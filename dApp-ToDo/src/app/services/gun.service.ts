@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ResolvedReflectiveFactory } from '@angular/core';
 // RxJs
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ToDo, _ToDo } from '../models/toDo/toDo';
 // Gun
 import * as Gun from 'gun/gun';
 require('gun/sea');
+require('gun/lib/unset.js');
 
 import { User } from '../models/user/user';
 import { Task, taskState } from '../models/toDo/task';
@@ -90,7 +91,7 @@ export class GunService {
       }
       else {
         resolve(false);
-      }
+      }0
     })
   }
 
@@ -100,12 +101,26 @@ export class GunService {
 
 /// Add ToDo to Graph DB
 /// Parameter: none
-async addToDo(): Promise<ToDo> {
+async addToDo(updateToDo?: ToDo): Promise<ToDo> {
   return new Promise<ToDo>(async (resolve) => {
 
     // Build new Dummy ToDo
     let toDo:_ToDo
+    if (updateToDo == undefined) {
     toDo = new _ToDo("Einkaufsliste");
+    toDo.init()
+    } else {
+      toDo = new _ToDo(updateToDo.title);
+      toDo.key = updateToDo.key;
+      toDo.tasks = updateToDo.tasks;
+      toDo.key = updateToDo.key;
+      toDo.updatePKey(updateToDo.key);
+      console.log("SEE NOW")
+      console.log(toDo.key)
+      if (toDo.tasks.length != 0) {
+        console.log(toDo.tasks[0].parentKey)
+      }
+    }
     // Get Encryption-Key
     let pair = this.user.pair().priv;
     // Encrypt toDo
@@ -132,7 +147,9 @@ async addToDo(): Promise<ToDo> {
         let object = decryptToDo as _ToDo;
         // Save element in Personal ToDos
         console.log("TODO set and updated")
-        resolve(new ToDo(object.title,object.key, object.tasks));
+        let toDoObject = new ToDo(object.title,object.key, object.tasks);
+        toDoObject.key = toDo.key;
+        resolve(toDoObject);
       })
     })
 }
@@ -159,6 +176,8 @@ async addToDo(): Promise<ToDo> {
           let message = ack.put as dbEntry;
           // Decrypt Message to Object
           await Gun.SEA.decrypt(message.message, pair).then(decryptToDo =>{
+            console.log("SEA")
+            console.log(decryptToDo)
             let object = decryptToDo as dbListEntries;
             if (object == undefined) return;
             if (object.entries.includes(toDo.key)) {
@@ -183,6 +202,7 @@ async addToDo(): Promise<ToDo> {
       let pair = this.user.pair().pub;
       let list: dbListEntries;
       this.db.gun.get(graphDBKey).get("ListUserToDo4/" + pair , async function(ack){
+        console.log(ack);
         if (ack.put == undefined) {
           resolve(new dbListEntries([]))
         } else {
@@ -202,21 +222,38 @@ async addToDo(): Promise<ToDo> {
 
 
   async getToDo(key: string): Promise <ToDo> {
+    console.log(key)
     return new Promise<ToDo>((resolve, reject) => {
-      this.user.get(graphDBKey, function(ack) {
+
+      let pair = this.user.pair().priv;
+      this.db.gun.get(graphDBKey).get(key, async function(ack) {
+        console.log(ack)
         if(!ack.put){
-            console.log("No ToDos Found")
+            console.log("No No Found")
           } else {
-            console.log(ack)
-           // strip toDos
-           // Build _ToDos
+            console.log("FOUND");
+            let message = ack.put as dbEntry;
+            if (message.decrypt != "") {
+              await Gun.SEA.decrypt(message.message, message.decrypt).then(decryptToDo =>{
+                let object = decryptToDo as _ToDo;
+            
+                let nToDo = new ToDo(object.title, object.key, object.tasks);
+                resolve(nToDo)
+              });
+            } else {
+              await Gun.SEA.decrypt(message.message, pair).then(decryptToDo =>{
+                let object = decryptToDo as _ToDo;
+                console.log(object.key)
+                console.log(object.tasks.length)
+                if (object.tasks.length != 0) {
+                  console.log(object.tasks[0].parentKey)
+                }
+                let nToDo = new ToDo(object.title, object.key, object.tasks);
+                resolve(nToDo)
+              });
+            }
           }
       })
-
-
-
-
-
       // let test =  this.db.gun.get('todo/'+ key + "/" + title, function(ack){
       //   let object = ack.put as ToDo;
       //   resolve(object)
@@ -235,21 +272,16 @@ async addToDo(): Promise<ToDo> {
 
   async getMyToDos(): Promise <ToDo[]> {
     return new Promise<ToDo[]>((resolve, reject) => {
-      console.log("MY TODOS")
       this.getUserToDoList().then(list => {
         let toDos: ToDo[] = [];
         let privPair = this.user.pair().priv;
-        console.log(list)
         for (var entry of list.entries) {
-          console.log("Step")
           this.db.gun.get(graphDBKey).get(entry, async function(ack) {
-            console.log(ack);
             let dbEntry = ack.put as dbEntry;
         
             if (dbEntry.decrypt.toString() === "") {
               let decryptToDo= await Gun.SEA.decrypt(dbEntry.message, privPair);
               let object = decryptToDo as _ToDo;
-              console.log("Decrypt via priv")
               let newToDo = new ToDo(object.title,object.key, object.tasks);
               console.log(toDos.findIndex(item => item.key == newToDo.key))
               if (toDos.findIndex(item => item.key == newToDo.key) == -1) {
@@ -259,7 +291,6 @@ async addToDo(): Promise<ToDo> {
             } else {
               let decryptToDo= await Gun.SEA.decrypt(dbEntry.message, dbEntry.decrypt);
               let object = decryptToDo as _ToDo;
-              console.log("Decrypt via decryptionKey")
               let newToDo = new ToDo(object.title,object.key, object.tasks);
               if (toDos.findIndex(item => item.key == newToDo.key) == -1) {
                 toDos.push(newToDo);
@@ -267,14 +298,11 @@ async addToDo(): Promise<ToDo> {
             }
             console.log (toDos.length + " xx " +  list.entries.length)
             if (toDos.length === list.entries.length) {
-
               resolve(toDos)
               return;
             }
           })
-
-        }
-    
+        }    
       })  
     })
   }
@@ -295,11 +323,26 @@ async addToDo(): Promise<ToDo> {
     })
   }
 
-  removeToDo(token: string, task: Task ) {
-    console.log("Removed from: "+ token + " there Task" + task.input);
+  removeToDo(task: Task ) {
+    this.user.get(graphDBKey).unset(task.parentKey);
     
   }
 
+  removeTaskFromToDo(task: Task): Promise<boolean> {
+    console.log("removeTaskFromToDo - " + task.parentKey)
+    return new Promise<boolean>((resolve) => {
+      console.log(task.parentKey)
+      this.getToDo(task.parentKey).then(todo=>{
+        console.log(todo);
+        todo.removeTask(task);
+        console.log(todo);
+        this.addToDo(todo).then(x=>{
+          resolve(true);
+        })
+      })
+    })
+
+  }
 
 
   async changePrivacyOfToDo(toDo: ToDo, priv: boolean): Promise<boolean>  {

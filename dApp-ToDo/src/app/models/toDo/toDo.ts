@@ -5,15 +5,22 @@ export class _ToDo {
     public key: string;
     public tasks: _Task[];
     constructor(public title: string){
+        this.tasks = [];
+    }
+
+    init(){
         this.key = Math.random().
         toString(36).substring(2, 15) + 
         Math.random().toString(36).substring(2, 15);
-        this.tasks = [];
+    }
+
+    updatePKey(key: string) {
+        this.tasks.forEach(item => item.parentKey = key);
     }
 }
 export class ToDo {
 
-    public tasks: Task[];
+    public tasks: Task[] = [];
     public title: string;
     public key: string;
     public pub: boolean;
@@ -21,22 +28,24 @@ export class ToDo {
 
 
     constructor(
-        title: string, key?:string, tasks?: _Task[]
+        title: string, key:string, tasks?: _Task[]
     ) {
         this.title = title;
         if (key == undefined) {
-            this.key = Math.random().
-                        toString(36).substring(2, 15) + 
-                        Math.random().toString(36).substring(2, 15);
+            // this.key = Math.random().
+            //             toString(36).substring(2, 15) + 
+            //             Math.random().toString(36).substring(2, 15);
         } else {
             this.key = key;
         }
-        if (tasks == []) {
+        if (tasks == [] || tasks == undefined) {
             this.tasks = [];
         } else {
             for (var task of tasks) {
-                this.tasks.push(new Task(task.input, task.state, task.key))
+                this.tasks.push(new Task(task.input, task.state, this.key, task.key))
+                
             }
+            console.log("Funny how shit " + this.key);
         }
     }
 
@@ -45,11 +54,13 @@ export class ToDo {
     public addTask(newTask: Task):boolean {
         if (this.tasks.includes(newTask)) return false;
         this.tasks.push(newTask);
+        newTask.parentKey = this.key;
         return true;
 
     }
 
     public updateTask(updatedTask: Task): boolean {
+        updatedTask.parentKey = this.key;
         let index = this.tasks.findIndex(item => item.key == updatedTask.key);
         if (index === undefined) return false;
         this.tasks[index] = updatedTask;
@@ -58,6 +69,7 @@ export class ToDo {
     
     /// remove Task from ToDo
     public removeTask(removeTask: Task): boolean{
+        removeTask.parentKey = this.key;
         let index = this.tasks.findIndex(item => item.key === removeTask.key);
         console.log(index);
         if (index === undefined) return false;

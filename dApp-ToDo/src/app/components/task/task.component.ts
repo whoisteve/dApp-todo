@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Task, taskState } from 'src/app/models/toDo/task';
 import { ToDo } from 'src/app/models/toDo/toDo';
 import { GunService } from 'src/app/services/gun.service';
@@ -10,20 +11,32 @@ import { GunService } from 'src/app/services/gun.service';
 })
 export class TaskComponent implements OnInit {
 
-  @Input() token: string; 
+
   @Input() task: Task;
+
+  private input: string;
   //public task: Task = new Task("", taskState.unfinished);
 
-  constructor() {
-   
+  constructor(private gun: GunService) {
+
    }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.input = this.task.input;
+  }
 
   removeTask(){
-    // call Service to remove Task via ToDo Token
-    console.log(this.token + " and from this remove Task: " + this.task.input);
-    //GunService.removeToDo(this.token, this.task);
+    console.log("This gonne be dstroyed : " + this.task.key + " of " + this.task.parentKey)
+    this.gun.removeTaskFromToDo(this.task);
+  }
+
+  editTask(){
+ 
+  }
+
+
+  runInputChange(event: Event) {
+    console.log(this.input)
   }
 
 }

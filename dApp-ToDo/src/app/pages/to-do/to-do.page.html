@@ -1,4 +1,4 @@
-<ion-content>
+<ion-content style="--background:white">
   <ion-grid class="mainGrid" style="background-color: #FFFFFF; height:100%"> 
     <ion-row>
       <ion-col size="8" *ngIf="toDo != undefined">
@@ -11,7 +11,7 @@
       <ion-col size="12" *ngIf="toDo != undefined">
         <div *ngIf="toDo != undefined">
         <div *ngFor="let task of toDo.tasks">
-          <task [task]="task" [token]="toDo.getToken()"></task>
+          <task [task]="task" [remove]="removeTask" [edit]="editTask"></task>
         </div>
       </div>
       </ion-col>
@@ -29,12 +29,12 @@
         <ion-col size="1"></ion-col>
         <ion-col size="9">
           <div style="background-color: var(--toDo-color-light); border-radius: 17pt; height:75px ;">
-            <ion-input style="font-size:22pt; margin-left:1em; margin-right:1em; height: 100%;" placeholder="Ein neuer sinnvoller Task ..."></ion-input>
+            <ion-input style="font-size:22pt; margin-left:1em; margin-right:1em; height: 100%;" [(ngModel)]="inputTask" placeholder="Ein neuer sinnvoller Task ..."></ion-input>
           </div>
         </ion-col>
         <ion-col size="1">
           <div style="padding-left:1em; height: 100%;">
-            <ion-button icon-only (click)="removeTask()" shape="round" style="height: 100%; margin-top:0; margin-bottom:0; --border-radius:17px" color="primary">
+            <ion-button icon-only (click)="addTask()" shape="round" style="height: 100%; margin-top:0; margin-bottom:0; --border-radius:17px" color="primary">
               <ion-icon name="add-outline" size="large"></ion-icon>
             </ion-button>
           </div>

@@ -2,7 +2,7 @@
   <ion-row>
     <ion-col size="10">
       <div style="background-color: var(--toDo-color-dark); padding-top: 0.75em; padding-bottom: 0.75em; border-radius: 11pt;">
-        <ion-input id="text" class="taskTitle" placeholder="Einkaufsliste" (ionInput)="runInputChange($event)" style="margin-left: 0.75em; width:95%" value="{{task.input}}"></ion-input>
+        <ion-input id="text" class="taskTitle" placeholder="Einkaufsliste" (input)="runInputChange($event)" style="margin-left: 0.75em; width:95%" value="{{task.input}}" [(ngModel)]="input"></ion-input>
       </div>
     </ion-col>
     <ion-col size="2">

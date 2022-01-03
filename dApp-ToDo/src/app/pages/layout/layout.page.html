@@ -13,7 +13,7 @@
       </ion-label>
       <!-- <ion-row *ngFor="let toDo of toDos" style="padding-top:0.25em; width: auto;"> -->
         <ion-menu-toggle autoHide="false"  class="toDoMenu" *ngFor="let toDo of user.toDos">
-          <ion-item class="toDoMenuItem" routerLink="/app/task/{{toDo.title}}" routerDirection="root" routerLinkActive="active-link">
+          <ion-item class="toDoMenuItem" routerLink="/app/task/{{toDo.key}}" routerDirection="root" routerLinkActive="active-link">
             <ion-item class="toDoMenuItem">
               {{toDo.title}}
             </ion-item>
