@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToDo } from 'src/app/models/toDo/toDo';
+import { ToDo, _ToDo } from 'src/app/models/toDo/toDo';
 import { User } from 'src/app/models/user/user';
 import { GunService } from 'src/app/services/gun.service';
 
@@ -18,17 +18,27 @@ export class LayoutPage implements OnInit {
 
   constructor(private gun: GunService,  private router: Router) {
 
+   }
+
+   ionViewWillEnter() {
+     
     this.gun.getUsername().then(name => {
       this.username = name;
-    })
-    if (this.gun.subUser != undefined) {
-      this.gun.subUser.subscribe(subUser=> {
-        this.user = subUser;
-      })
-    }
 
-    // subscription to service BehaviorSubject to get user Content
-   }
+      if (this.gun.subUser != undefined) {
+        this.gun.subUser.subscribe(subUser=> {
+          this.user = subUser;
+          
+        })
+      }
+      this.gun.getMyToDos().then(toDos=>{
+        console.log(toDos);
+        this.gun.subUser.value.toDos= toDos;
+      })
+    })
+}
+
+   
 
    updateUI(){
 
@@ -41,7 +51,7 @@ export class LayoutPage implements OnInit {
   addToDo(){
     console.log("addToDo")
     this.gun.addToDo().then(x=>{
-      this.user.addToDo(x);
+     this.user.addToDo(x);
     })
   }
   

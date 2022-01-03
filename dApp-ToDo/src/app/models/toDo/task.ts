@@ -1,19 +1,30 @@
 export enum taskState {unfinished="unfinished", finished="finished"}
 
-export class Task {
+export class _Task {
 
     public key: string;
-    public state: taskState;
 
     constructor(
         public input: string, 
-        state?: taskState
+        public state: taskState
     ) {
-        if (state === undefined){
-            this.state = taskState.unfinished;
-        } else {
-            this.state = state;
-        }
+        this.key = Math.random().
+        toString(36).substring(2, 15) + 
+        Math.random().toString(36).substring(2, 15);
+    }
+}
+
+
+
+
+
+export class Task {
+
+    constructor(
+        public input: string, 
+        public state: taskState,
+        public key: string
+    ) {
     }
 
     /// Update Tagged / Untagged State of Task

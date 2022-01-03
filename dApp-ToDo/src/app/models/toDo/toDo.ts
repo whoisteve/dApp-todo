@@ -1,13 +1,14 @@
-import { Task } from "./task";
+import { Task, _Task } from "./task";
 import {sha256} from 'crypto-hash';
 
 export class _ToDo {
     public key: string;
-    public tasks: Task[];
+    public tasks: _Task[];
     constructor(public title: string){
         this.key = Math.random().
         toString(36).substring(2, 15) + 
         Math.random().toString(36).substring(2, 15);
+        this.tasks = [];
     }
 }
 export class ToDo {
@@ -15,11 +16,12 @@ export class ToDo {
     public tasks: Task[];
     public title: string;
     public key: string;
+    public pub: boolean;
 
 
 
     constructor(
-        title: string, key?:string, tasks?: Task[]
+        title: string, key?:string, tasks?: _Task[]
     ) {
         this.title = title;
         if (key == undefined) {
@@ -29,10 +31,12 @@ export class ToDo {
         } else {
             this.key = key;
         }
-        if (tasks == undefined) {
+        if (tasks == []) {
             this.tasks = [];
         } else {
-            this.tasks = tasks;
+            for (var task of tasks) {
+                this.tasks.push(new Task(task.input, task.state, task.key))
+            }
         }
     }
 
