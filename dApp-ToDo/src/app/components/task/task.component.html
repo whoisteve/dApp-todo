@@ -1,16 +1,29 @@
 <ion-grid>
   <ion-row>
-    <ion-col size="10">
+    <ion-col size="9">
       <div style="background-color: var(--toDo-color-dark); padding-top: 0.75em; padding-bottom: 0.75em; border-radius: 11pt;">
-        <ion-input id="text" class="taskTitle" placeholder="Einkaufsliste" (input)="runInputChange($event)" style="margin-left: 0.75em; width:95%" value="{{task.input}}" [(ngModel)]="input"></ion-input>
+        <ion-input type="submit" id="text" class="taskTitle" placeholder="Einkaufsliste" (input)="runInputChange($event)" style="margin-left: 0.75em; width:95%" value="{{task.input}}" [(ngModel)]="input"></ion-input>
       </div>
     </ion-col>
-    <ion-col size="2">
+    <ion-col size="1">
+      <div style="padding-left:1em; height: 100%;" *ngIf="!finsihed">
+          <ion-button icon-only (click)="tickValue(true)" shape="round" style="height: 100%; width: 84px; margin-top:0; margin-bottom:0; --border-radius:17px" color="medium">
+            <ion-icon  name="square-outline" size="large"></ion-icon>
+           
+          </ion-button>
+      </div> 
+      <div style="padding-left:1em; height: 100%;" *ngIf="finsihed">
+        <ion-button icon-only (click)="tickValue(false)" shape="round" style="height: 100%; width: 84px; margin-top:0; margin-bottom:0; --border-radius:17px" color="success">
+          <ion-icon  name="checkbox-outline" size="larger" style="width:100%; height: 100%"></ion-icon>
+        </ion-button>
+    </div>     
+    </ion-col>
+    <ion-col size="1" >
       <div style="padding-left:1em; height: 100%;">
-        <ion-button icon-only (click)="removeTask()" shape="round" style="height: 100%; margin-top:0; margin-bottom:0; --border-radius:17px" color="danger">
+        <ion-button icon-only (click)="removeTask()" shape="round" style="height: 100%; margin-top:0; margin-bottom:0; --border-radius:17px; padding-left: 0.5em " color="danger">
           <ion-icon name="trash-outline" size="large"></ion-icon>
         </ion-button>
-      </div>
+      </div>  
     </ion-col>
   </ion-row>
 </ion-grid>

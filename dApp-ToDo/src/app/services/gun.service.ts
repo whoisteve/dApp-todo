@@ -24,7 +24,7 @@ export enum loginMessage{unknownUser="Der Nutzer ist nicht bekannt",
 
 export interface loginInterface {err: string}
 
-const graphDBKey = "toDoKey"
+const graphDBKey = "toDoKeySDA"
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +32,7 @@ const graphDBKey = "toDoKey"
 
 export class GunService {
   public subUser: BehaviorSubject<User> = new BehaviorSubject(new User(""));
+  public removed: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   public user = this.db.gun.user().recall({sessionStorage: true});
 
@@ -317,7 +318,12 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
 
   async getUsername(): Promise <string> {
     return new Promise<string>((resolve) => {
-      this.user.get('alias').on((v) => {
+      let user = this.db.gun.user().get("uKU8sxQXAmCJbeswxvPmWn94f4xM8JXN5MiD7UaNRAA.VppevxXPYmxS-MZzXmnyxcbo1zZL8YpWk392hB3Odks")
+      console.log("FUCK YOU !!!!!! - ")
+      console.log(user);
+
+      this.db.gun.user().get('alias').on((v) => {
+        console.log("HE")
         this.subUser.value.username = v;
         resolve(v)});
     })
@@ -336,13 +342,29 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
         console.log(todo);
         todo.removeTask(task);
         console.log(todo);
+        this.removed.next(true);
         this.addToDo(todo).then(x=>{
           resolve(true);
         })
       })
     })
-
   }
+
+  updateTaskFromToDo(task: Task): Promise<boolean> {
+    console.log(task);
+    return new Promise<boolean>((resolve) => {
+ 
+      this.getToDo(task.parentKey).then(todo=>{
+        console.log("Bananarama")
+        console.log(todo);
+        todo.updateTask(task);
+        this.addToDo(todo).then(x=>{
+          resolve(true);
+        })
+      })
+    })
+  }
+
 
 
   async changePrivacyOfToDo(toDo: ToDo, priv: boolean): Promise<boolean>  {

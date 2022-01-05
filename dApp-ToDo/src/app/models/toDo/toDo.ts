@@ -32,9 +32,7 @@ export class ToDo {
     ) {
         this.title = title;
         if (key == undefined) {
-            // this.key = Math.random().
-            //             toString(36).substring(2, 15) + 
-            //             Math.random().toString(36).substring(2, 15);
+
         } else {
             this.key = key;
         }
@@ -45,7 +43,6 @@ export class ToDo {
                 this.tasks.push(new Task(task.input, task.state, this.key, task.key))
                 
             }
-            console.log("Funny how shit " + this.key);
         }
     }
 
@@ -60,7 +57,11 @@ export class ToDo {
     }
 
     public updateTask(updatedTask: Task): boolean {
-        updatedTask.parentKey = this.key;
+        
+        console.log("HEllo");
+        console.log(updatedTask);
+        console.log(this.tasks);
+
         let index = this.tasks.findIndex(item => item.key == updatedTask.key);
         if (index === undefined) return false;
         this.tasks[index] = updatedTask;
@@ -83,7 +84,6 @@ export class ToDo {
     public getToken(): string {
         //backup return since following is async
         return this.title;
-
         // Function to hash object cannot be async !        
         let enc = new TextEncoder();
         var toBeCrypt: string = "";

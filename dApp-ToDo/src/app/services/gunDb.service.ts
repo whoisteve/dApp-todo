@@ -7,7 +7,7 @@ require('gun/axe');
 
 @Injectable()
 export class GunDb {
-    readonly gun = GUN(['http://localhost:3030/gun', 'https://gun-manhattan.herokuapp.com/gun']);
+    readonly gun = GUN(['http://localhost:8080/gun', 'https://gun-manhattan.herokuapp.com/gun']);
   static gun: any;
 }
 

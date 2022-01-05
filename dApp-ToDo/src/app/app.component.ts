@@ -10,7 +10,6 @@ import { GunDb } from './services/gunDb.service';
 export class AppComponent {
 
   constructor(private gun: GunDb) {
-    gun.gun.get('test').once(v => console.log(v))
 
   }
 }

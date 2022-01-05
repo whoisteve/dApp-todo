@@ -1,7 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Task, taskState } from 'src/app/models/toDo/task';
-import { ToDo } from 'src/app/models/toDo/toDo';
 import { GunService } from 'src/app/services/gun.service';
 
 @Component({
@@ -13,9 +11,9 @@ export class TaskComponent implements OnInit {
 
 
   @Input() task: Task;
-
+  
+  private finsihed: boolean;
   private input: string;
-  //public task: Task = new Task("", taskState.unfinished);
 
   constructor(private gun: GunService) {
 
@@ -23,17 +21,30 @@ export class TaskComponent implements OnInit {
 
   ngOnInit() {
     this.input = this.task.input;
+    if (this.task.state == taskState.finished) {
+      this.finsihed = true;
+    } else {
+      this.finsihed = false;
+    }
   }
 
   removeTask(){
-    console.log("This gonne be dstroyed : " + this.task.key + " of " + this.task.parentKey)
     this.gun.removeTaskFromToDo(this.task);
   }
 
-  editTask(){
- 
+  tickTask(){
+    this.gun.updateTaskFromToDo(this.task);
   }
 
+  tickValue(value: boolean) {
+    this.finsihed = value;
+    if (value) {
+      this.task.state = taskState.finished
+    } else {
+      this.task.state = taskState.unfinished
+    }
+    this.tickTask();
+  }
 
   runInputChange(event: Event) {
     console.log(this.input)

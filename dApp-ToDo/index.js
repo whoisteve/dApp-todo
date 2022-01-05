@@ -1,11 +1,9 @@
-const express = require('express')
-const Gun = require('gun');
-const app = express()
-const port = 3030
-app.use(Gun.serve);
-
-const server = app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+var http = require('http');
+ 
+var server = http.createServer();
+var Gun = require('gun');
+var gun = Gun({web: server});
+ 
+server.listen(8080, function () {
+  console.log('Server listening on http://localhost:8080/gun')
 })
-
-Gun({ web: server });

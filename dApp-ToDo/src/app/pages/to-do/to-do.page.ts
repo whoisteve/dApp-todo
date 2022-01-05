@@ -15,32 +15,30 @@ export class ToDoPage implements OnInit {
   private inputTask: string;
 
   constructor(private router: ActivatedRoute, private gun: GunService ) { 
+    this.reloadToDo();
+    this.gun.removed.subscribe(x=>{
+      if (x){
+        window.location.reload();
+      }
+    })
+  }
+
+  reloadToDo(){
     this.router.params.subscribe(params => {
       let key = params['toDo'];
         this.gun.getToDo(key).then(toDo => {
           this.toDo = toDo;
-          console.log("FOR LOOP")
-          for (var entry of toDo.tasks) {
-            console.log(entry.parentKey + " as " + entry.key + " of " + entry.input);
-          }
         })
     })
-
   }
 
-  ngOnInit() {
- 
-  }
+  ngOnInit() { }
 
   ionViewWillEnter() {
     this.router.params.subscribe(params => {
       let key = params['toDo'];
         this.gun.getToDo(key).then(toDo => {
           this.toDo = toDo;
-          console.log("FOR LOOP")
-          for (var entry of toDo.tasks) {
-            console.log(entry.parentKey + " as " + entry.key + " of " + entry.input);
-          }
         })
     })
 }
@@ -57,24 +55,17 @@ export class ToDoPage implements OnInit {
   }
 
   addTask(){
-    console.log(this.inputTask);
     if (this.inputTask != "" && this.inputTask != undefined) {
       let task = new Task(this.inputTask, taskState.unfinished, this.toDo.key);
       task.init()
       this.toDo.addTask(task);
-      console.log(this.toDo.key)
       this.gun.addToDo(this.toDo);
     } 
   }
 
   removeTask(task: Task){
-    // call Service to remove Task via ToDo Token
-   
-    //GunService.removeToDo(this.token, this.task);
-
     this.router.params.subscribe(params => {
       let key = params['toDo'];
-      console.log("REMOVE REMOVE of " +(task.input))
       task.parentKey = key;
       this.gun.removeTaskFromToDo(task).then(removed=>{
         this.gun.getToDo(task.parentKey).then(toDo => {
@@ -83,14 +74,5 @@ export class ToDoPage implements OnInit {
       })   
     })
 
-  }
-
-  editTask(task: Task){
-    // call Service to remove Task via ToDo Token
-   
-    //GunService.removeToDo(this.token, this.task);
-    this.gun.removeTaskFromToDo(task).then(removed=>{
-      
-    })
   }
 }
