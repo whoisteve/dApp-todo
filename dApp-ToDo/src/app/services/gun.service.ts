@@ -33,7 +33,7 @@ const graphDBKey = "toDoKeySDA"
 export class GunService {
   public subUser: BehaviorSubject<User> = new BehaviorSubject(new User(""));
   public removed: BehaviorSubject<boolean> = new BehaviorSubject(false);
-
+  public toDoUpdated: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public user = this.db.gun.user().recall({sessionStorage: true});
 
   constructor(private db: GunDb) { }
@@ -108,7 +108,7 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
     // Build new Dummy ToDo
     let toDo:_ToDo
     if (updateToDo == undefined) {
-    toDo = new _ToDo("Einkaufsliste");
+    toDo = new _ToDo("Neuer ToDo");
     toDo.init()
     } else {
       toDo = new _ToDo(updateToDo.title);
@@ -116,11 +116,6 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
       toDo.tasks = updateToDo.tasks;
       toDo.key = updateToDo.key;
       toDo.updatePKey(updateToDo.key);
-      console.log("SEE NOW")
-      console.log(toDo.key)
-      if (toDo.tasks.length != 0) {
-        console.log(toDo.tasks[0].parentKey)
-      }
     }
     // Get Encryption-Key
     let pair = this.user.pair().priv;
@@ -132,9 +127,7 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
     // Get Entry from DB
 
     this.updateToDoList(toDo).then(async list => {
-      console.log(list)
        let message= await Gun.SEA.encrypt(list, this.user.pair().pub);
-       console.log(message);
        let element = new dbEntry(message, dbEntryType.list, "");
        this.db.gun.get(graphDBKey).get("ListUserToDo4/" + this.user.pair().pub).put(element);
       return;
@@ -147,7 +140,6 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
         let decryptToDo= await Gun.SEA.decrypt(message.message, pair);
         let object = decryptToDo as _ToDo;
         // Save element in Personal ToDos
-        console.log("TODO set and updated")
         let toDoObject = new ToDo(object.title,object.key, object.tasks);
         toDoObject.key = toDo.key;
         resolve(toDoObject);
@@ -165,23 +157,18 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
       var written = false;
       this.db.gun.get(graphDBKey).get("ListUserToDo4/" + pair , async function(ack){
         if (ack.put == undefined && !written) {
-          console.log("New List")
-          console.log(ack)
           list = new dbListEntries([(toDo.key)]);
           resolve(list);
           written = true
           return;
         } else if (!written){
-          console.log("List is there")
-          console.log(ack)
           let message = ack.put as dbEntry;
           // Decrypt Message to Object
           await Gun.SEA.decrypt(message.message, pair).then(decryptToDo =>{
-            console.log("SEA")
-            console.log(decryptToDo)
             let object = decryptToDo as dbListEntries;
             if (object == undefined) return;
             if (object.entries.includes(toDo.key)) {
+              object.entries.findIndex
               resolve(object);
               return;
             } else {
@@ -203,17 +190,13 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
       let pair = this.user.pair().pub;
       let list: dbListEntries;
       this.db.gun.get(graphDBKey).get("ListUserToDo4/" + pair , async function(ack){
-        console.log(ack);
         if (ack.put == undefined) {
           resolve(new dbListEntries([]))
-        } else {
-          console.log("List is there")
-          
+        } else { 
           let message = ack.put as dbEntry;
           // Decrypt Message to Object
           await Gun.SEA.decrypt(message.message, pair).then(decryptToDo =>{
             let object = decryptToDo as dbListEntries;
-            console.log(object)
             resolve(object)
           });
         }
@@ -223,12 +206,10 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
 
 
   async getToDo(key: string): Promise <ToDo> {
-    console.log(key)
     return new Promise<ToDo>((resolve, reject) => {
 
       let pair = this.user.pair().priv;
       this.db.gun.get(graphDBKey).get(key, async function(ack) {
-        console.log(ack)
         if(!ack.put){
             console.log("No No Found")
           } else {
@@ -244,11 +225,6 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
             } else {
               await Gun.SEA.decrypt(message.message, pair).then(decryptToDo =>{
                 let object = decryptToDo as _ToDo;
-                console.log(object.key)
-                console.log(object.tasks.length)
-                if (object.tasks.length != 0) {
-                  console.log(object.tasks[0].parentKey)
-                }
                 let nToDo = new ToDo(object.title, object.key, object.tasks);
                 resolve(nToDo)
               });
@@ -284,7 +260,6 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
               let decryptToDo= await Gun.SEA.decrypt(dbEntry.message, privPair);
               let object = decryptToDo as _ToDo;
               let newToDo = new ToDo(object.title,object.key, object.tasks);
-              console.log(toDos.findIndex(item => item.key == newToDo.key))
               if (toDos.findIndex(item => item.key == newToDo.key) == -1) {
                 toDos.push(newToDo);
               }
@@ -297,7 +272,6 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
                 toDos.push(newToDo);
               }
             }
-            console.log (toDos.length + " xx " +  list.entries.length)
             if (toDos.length === list.entries.length) {
               resolve(toDos)
               return;
@@ -318,12 +292,7 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
 
   async getUsername(): Promise <string> {
     return new Promise<string>((resolve) => {
-      let user = this.db.gun.user().get("uKU8sxQXAmCJbeswxvPmWn94f4xM8JXN5MiD7UaNRAA.VppevxXPYmxS-MZzXmnyxcbo1zZL8YpWk392hB3Odks")
-      console.log("FUCK YOU !!!!!! - ")
-      console.log(user);
-
       this.db.gun.user().get('alias').on((v) => {
-        console.log("HE")
         this.subUser.value.username = v;
         resolve(v)});
     })
@@ -335,13 +304,9 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
   }
 
   removeTaskFromToDo(task: Task): Promise<boolean> {
-    console.log("removeTaskFromToDo - " + task.parentKey)
     return new Promise<boolean>((resolve) => {
-      console.log(task.parentKey)
       this.getToDo(task.parentKey).then(todo=>{
-        console.log(todo);
         todo.removeTask(task);
-        console.log(todo);
         this.removed.next(true);
         this.addToDo(todo).then(x=>{
           resolve(true);
@@ -351,12 +316,9 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
   }
 
   updateTaskFromToDo(task: Task): Promise<boolean> {
-    console.log(task);
     return new Promise<boolean>((resolve) => {
  
       this.getToDo(task.parentKey).then(todo=>{
-        console.log("Bananarama")
-        console.log(todo);
         todo.updateTask(task);
         this.addToDo(todo).then(x=>{
           resolve(true);

@@ -17,7 +17,11 @@ export class LayoutPage implements OnInit {
 
 
   constructor(private gun: GunService,  private router: Router) {
-
+    this.gun.toDoUpdated.subscribe(x=>{
+      if(x){
+        this.reloadToDos();
+      }
+    })
    }
 
    ionViewWillEnter() {
@@ -31,11 +35,15 @@ export class LayoutPage implements OnInit {
           
         })
       }
-      this.gun.getMyToDos().then(toDos=>{
-        console.log(toDos);
-        this.gun.subUser.value.toDos= toDos;
-      })
+      this.reloadToDos();
     })
+}
+
+reloadToDos(){
+  this.gun.getMyToDos().then(toDos=>{
+    console.log(toDos);
+    this.gun.subUser.value.toDos= toDos;
+  })
 }
 
    

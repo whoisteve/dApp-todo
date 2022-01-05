@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Task, taskState } from 'src/app/models/toDo/task';
-import { ToDo } from 'src/app/models/toDo/toDo';
+import { ToDo, _ToDo } from 'src/app/models/toDo/toDo';
 import { GunService } from 'src/app/services/gun.service';
 
 @Component({
@@ -13,6 +13,8 @@ export class ToDoPage implements OnInit {
 
   private toDo: ToDo;
   private inputTask: string;
+  private inputChanged: boolean = false;
+  private inputToDo: string="";
 
   constructor(private router: ActivatedRoute, private gun: GunService ) { 
     this.reloadToDo();
@@ -28,6 +30,7 @@ export class ToDoPage implements OnInit {
       let key = params['toDo'];
         this.gun.getToDo(key).then(toDo => {
           this.toDo = toDo;
+          this.inputToDo = toDo.title;
         })
     })
   }
@@ -43,9 +46,22 @@ export class ToDoPage implements OnInit {
     })
 }
 
-
   runInputChange(event: Event) {
-    console.log(event);
+    this.inputChanged = true;
+  }
+
+  changeToDoName(){
+    this.toDo.title = this.inputToDo;
+    let _toDo = new _ToDo(this.toDo.title);
+    _toDo.key = this.toDo.key;
+    _toDo.tasks = this.toDo.tasks;
+    this.gun.updateToDoList(_toDo).then(y=>{
+      this.gun.addToDo(this.toDo).then(x=>{
+        this.gun.toDoUpdated.next(true);
+        this.toDo = x;
+        this.inputChanged = false;
+      })
+    })
   }
 
   updateToDo(){
@@ -59,7 +75,9 @@ export class ToDoPage implements OnInit {
       let task = new Task(this.inputTask, taskState.unfinished, this.toDo.key);
       task.init()
       this.toDo.addTask(task);
-      this.gun.addToDo(this.toDo);
+      this.gun.addToDo(this.toDo).then(x=>{
+        this.inputTask=""
+      });
     } 
   }
 
@@ -73,6 +91,5 @@ export class ToDoPage implements OnInit {
         })
       })   
     })
-
   }
 }
