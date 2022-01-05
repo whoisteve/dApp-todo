@@ -50,6 +50,8 @@ export class LoginPage implements OnInit {
       if (x == loginMessage.success) {
         this.gun.loginUser(this.username, this.password).then(y=> {
           this.gun.subUser = new BehaviorSubject(new User(this.username));
+          this.username = "";
+          this.password = "";
           this.router.navigate(['/app/home']);
         })
       }
@@ -64,6 +66,8 @@ export class LoginPage implements OnInit {
       this.showError(x.toString());
       if (x == loginMessage.success) {
         this.gun.subUser = new BehaviorSubject(new User(this.username));
+        this.username = "";
+        this.password = "";
         this.router.navigate(['/app/home']);
       }
     })
