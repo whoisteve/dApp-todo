@@ -6,6 +6,7 @@ A decentralized ToDo-App with [GUN](https://gun.eco/).
 git clone git@github.com:stevomat/dApp-todo.git
 cd dApp-ToDo/
 npm install
+npm install -g @ionic/cli
 ionic serve
 ```
 
