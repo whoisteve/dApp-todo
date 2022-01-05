@@ -7,6 +7,9 @@ require('gun/axe');
 
 @Injectable()
 export class GunDb {
+  getMyToDos() {
+    throw new Error('Method not implemented.');
+  }
     readonly gun = GUN(['http://localhost:8080/gun', 'https://gun-manhattan.herokuapp.com/gun']);
   static gun: any;
 }

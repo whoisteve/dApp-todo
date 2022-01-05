@@ -24,7 +24,8 @@ export enum loginMessage{unknownUser="Der Nutzer ist nicht bekannt",
 
 export interface loginInterface {err: string}
 
-const graphDBKey = "toDoKeySDA"
+const graphDBKey = "keyToDo";
+const graphDBKeyList = "UserList/"
 
 @Injectable({
   providedIn: 'root'
@@ -61,7 +62,7 @@ export class GunService {
   }
 
   async loginUser(username: string,password: string): Promise <loginMessage> {
-     return new Promise<loginMessage>((resolve, reject) => {
+     return new Promise<loginMessage>((resolve) => {
       this.user.auth(username, password, function(ack) {
         if (ack.hasOwnProperty("err")) {
            let interace = ack as loginInterface;
@@ -129,7 +130,7 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
     this.updateToDoList(toDo).then(async list => {
        let message= await Gun.SEA.encrypt(list, this.user.pair().pub);
        let element = new dbEntry(message, dbEntryType.list, "");
-       this.db.gun.get(graphDBKey).get("ListUserToDo4/" + this.user.pair().pub).put(element);
+       this.db.gun.get(graphDBKey).get(graphDBKeyList).get(this.user.pair().pub).put(element);
       return;
     })
  
@@ -155,7 +156,7 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
       let pair = this.user.pair().pub;
       let list: dbListEntries;
       var written = false;
-      this.db.gun.get(graphDBKey).get("ListUserToDo4/" + pair , async function(ack){
+      this.db.gun.get(graphDBKey).get(graphDBKeyList).get(pair , async function(ack){
         if (ack.put == undefined && !written) {
           list = new dbListEntries([(toDo.key)]);
           resolve(list);
@@ -189,7 +190,7 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
       // Get user List
       let pair = this.user.pair().pub;
       let list: dbListEntries;
-      this.db.gun.get(graphDBKey).get("ListUserToDo4/" + pair , async function(ack){
+      this.db.gun.get(graphDBKey).get(graphDBKeyList).get(pair , async function(ack){
         if (ack.put == undefined) {
           resolve(new dbListEntries([]))
         } else { 
@@ -204,11 +205,13 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
     })
   }
 
-
+/// Get one User ToDo 
+/// Parameter: * key as Identificator of ToDo - Path
   async getToDo(key: string): Promise <ToDo> {
-    return new Promise<ToDo>((resolve, reject) => {
+    return new Promise<ToDo>((resolve) => {
 
       let pair = this.user.pair().priv;
+      /// Get ToDo via key
       this.db.gun.get(graphDBKey).get(key, async function(ack) {
         if(!ack.put){
             console.log("No No Found")
@@ -218,7 +221,6 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
             if (message.decrypt != "") {
               await Gun.SEA.decrypt(message.message, message.decrypt).then(decryptToDo =>{
                 let object = decryptToDo as _ToDo;
-            
                 let nToDo = new ToDo(object.title, object.key, object.tasks);
                 resolve(nToDo)
               });
@@ -231,24 +233,13 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
             }
           }
       })
-      // let test =  this.db.gun.get('todo/'+ key + "/" + title, function(ack){
-      //   let object = ack.put as ToDo;
-      //   resolve(object)
-      //   return;
-      // })
     })
   }
 
-  async getPublicToDo(id: string): Promise <ToDo> {
-    return new Promise<ToDo>((resolve, reject) => {
-      // get all users toDos
-
-      /// get selected public ToDo and try to decrypt with secret
-      })
-  }
-
+/// Get My User ToDos 
   async getMyToDos(): Promise <ToDo[]> {
-    return new Promise<ToDo[]>((resolve, reject) => {
+    return new Promise<ToDo[]>((resolve) => {
+
       this.getUserToDoList().then(list => {
         let toDos: ToDo[] = [];
         let privPair = this.user.pair().priv;
@@ -282,14 +273,7 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
     })
   }
 
-
-  /// Update ToDo
-  async updateToDo(): Promise <ToDo> {
-    return new Promise<ToDo>((resolve, reject) => {
-      // write and get ToDo 
-    })
-  }
-
+/// Get My Username 
   async getUsername(): Promise <string> {
     return new Promise<string>((resolve) => {
       this.db.gun.user().get('alias').on((v) => {
@@ -298,11 +282,13 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
     })
   }
 
+/// Remove my ToDo
+/// Parameter: * task as Task Identifier of ToDo - Path
   removeToDo(task: Task ) {
     this.user.get(graphDBKey).unset(task.parentKey);
-    
   }
-
+/// Remove Task from ToDo
+/// Parameter: * task as Identificator for Task of ToDo - Path
   removeTaskFromToDo(task: Task): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       this.getToDo(task.parentKey).then(todo=>{
@@ -317,7 +303,6 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
 
   updateTaskFromToDo(task: Task): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
- 
       this.getToDo(task.parentKey).then(todo=>{
         todo.updateTask(task);
         this.addToDo(todo).then(x=>{
@@ -326,9 +311,9 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
       })
     })
   }
-
-
-
+  
+/// Remove Task from ToDo
+/// Parameter: * task as Identificator for Task of ToDo - Path
   async changePrivacyOfToDo(toDo: ToDo, priv: boolean): Promise<boolean>  {
     return new Promise<boolean>(async (resolve) => {
       let decryptKey: string
@@ -361,8 +346,5 @@ async addToDo(updateToDo?: ToDo): Promise<ToDo> {
       })
     })
   }
-
-
-
 }
 

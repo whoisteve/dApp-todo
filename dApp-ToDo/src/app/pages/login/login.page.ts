@@ -12,14 +12,13 @@ import { GunDb } from 'src/app/services/gunDb.service';
 })
 export class LoginPage implements OnInit {
 
-  private username: string;
-  private password: string;
+  private username: string="";
+  private password: string="";
 
-  public errorMessage: string = "Message";
+  public errorMessage: string = "";
 
   constructor(private gun: GunService, private router: Router) {
-
-   }
+  }
 
   ngOnInit() {
 
@@ -33,7 +32,6 @@ export class LoginPage implements OnInit {
 }
 
   runInputChange(event: Event) {
-  //  console.log(event);
     this.errorMessage = "";
   }
 
@@ -60,7 +58,9 @@ export class LoginPage implements OnInit {
 
   signInUser() {
    // this.gun.getToDo("dasd");
-    console.log("Username:" + this.username + " " + this.password)
+    if (this.username =="" && this.password =="") {
+      this.showError("Keine Logindaten");
+    }
     this.gun.loginUser(this.username, this.password).then(x=> {
       console.log(x);
       this.showError(x.toString());
