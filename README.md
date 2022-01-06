@@ -2,6 +2,8 @@
 
 A decentralized ToDo-App with [GUN](https://gun.eco/).
 
+This application only works with chromium based browsers!
+
 ```sh
 git clone git@github.com:stevomat/dApp-todo.git
 cd dApp-ToDo/
